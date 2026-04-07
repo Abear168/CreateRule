@@ -1,0 +1,84 @@
+@page
+@model ApproveModel
+@{
+    ViewData["Title"] = "审核用户";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="bi bi-person-check"></i> 审核用户注册</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <input type="hidden" asp-for="Input.UserId" />
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">用户名</label>
+                                <p class="form-control-plaintext">@Model.UserProfile.UserName</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">真实姓名</label>
+                                <p class="form-control-plaintext">@Model.UserProfile.RealName</p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">邮箱</label>
+                                <p class="form-control-plaintext">@Model.UserProfile.Email</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">部门</label>
+                                <p class="form-control-plaintext">@Model.UserProfile.Department</p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">注册时间</label>
+                                <p class="form-control-plaintext">@Model.UserProfile.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="mb-3">
+                            <label asp-for="Input.Remark" class="form-label fw-bold">审核备注</label>
+                            <textarea asp-for="Input.Remark" class="form-control" rows="3" 
+                                      placeholder="可选：填写审核备注或拒绝原因"></textarea>
+                            <span asp-validation-for="Input.Remark" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input asp-for="Input.SendNotification" class="form-check-input" type="checkbox" checked />
+                                <label asp-for="Input.SendNotification" class="form-check-label">
+                                    发送邮件通知用户
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-page="./Pending" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> 返回列表
+                            </a>
+                            <div>
+                                <button type="submit" asp-page-handler="Reject" class="btn btn-danger me-2"
+                                        onclick="return confirm('确定要拒绝该用户的注册申请吗？')">
+                                    <i class="bi bi-x-circle"></i> 拒绝
+                                </button>
+                                <button type="submit" asp-page-handler="Approve" class="btn btn-success">
+                                    <i class="bi bi-check-circle"></i> 通过
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

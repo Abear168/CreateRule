@@ -1,0 +1,8 @@
+D:\Program\MES\Create_Rules\CreateRule\obj\Release\net10.0\PubTmp\Out\CreateRule.exe
+D:\Program\MES\Create_Rules\CreateRule\obj\Release\net10.0\PubTmp\Out\appsettings.Development.json
+D:\Program\MES\Create_Rules\CreateRule\obj\Release\net10.0\PubTmp\Out\appsettings.json
+D:\Program\MES\Create_Rules\CreateRule\obj\Release\net10.0\PubTmp\Out\dotnet-tools.json
+D:\Program\MES\Create_Rules\CreateRule\obj\Release\net10.0\PubTmp\Out\CreateRule.dll
+D:\Program\MES\Create_Rules\CreateRule\obj\Release\net10.0\PubTmp\Out\CreateRule.deps.json
+D:\Program\MES\Create_Rules\CreateRule\obj\Release\net10.0\PubTmp\Out\CreateRule.runtimeconfig.json
+D:\Program\MES\Create_Rules\CreateRule\obj\Release\net10.0\PubTmp\Out\CreateRule.pdb

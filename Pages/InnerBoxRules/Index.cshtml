@@ -1,0 +1,116 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "内箱规则定义";
+}
+
+<div class="card">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5><i class="bi bi-box"></i> 内箱规则定义</h5>
+        <a asp-page="./Create" class="btn btn-light btn-sm">
+            <i class="bi bi-plus-circle"></i> 新建规则
+        </a>
+    </div>
+    <div class="card-body">
+        <div id="delete-overlay" class="delete-overlay" style="display: none;">
+            <div class="delete-modal">
+                <div class="delete-icon">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <p>确定要删除此规则吗？</p>
+                <p class="text-muted small">此操作不可恢复</p>
+                <form method="post" asp-page-handler="Delete" id="deleteForm">
+                    <input name="id" id="deleteId" type="hidden" value="" />
+                    <div class="delete-actions">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="closeDeleteModal()">取消</button>
+                        <button type="submit" class="btn btn-danger btn-sm">确认删除</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>工单号</th>
+                        <th>规则模板</th>
+                        <th>预览示例</th>
+                        <th>前缀</th>
+                        <th>前缀位数</th>
+                        <th>流水码位数</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Rules.Count; i++)
+                    {
+                        var rule = Model.Rules[i];
+                        var preview = Model.Previews[i];
+                        <tr data-id="@rule.Id">
+                            <td>@rule.WorkOrder</td>
+                            <td><code>@rule.Template</code></td>
+                            <td><code class="text-success">@preview</code></td>
+                            <td>@rule.Prefix</td>
+                            <td>@rule.PrefixLength</td>
+                            <td>@rule.SequenceLength</td>
+                            <td>@rule.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>
+                                <a asp-page="./Edit" asp-route-id="@rule.Id" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="showDeleteModal(@rule.Id)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Rules.Any())
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">暂无数据</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.showToast = function(message, type = 'success') {
+            var toastId = 'toast-' + Date.now();
+            var typeClass = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            var toastHtml = `
+                <div id="${toastId}" class="toast">
+                    <div class="toast-body ${typeClass}">${message}</div>
+                </div>`;
+            $('#toast-container').append(toastHtml);
+            setTimeout(function() {
+                var toastEl = document.getElementById(toastId);
+                if (toastEl) {
+                    toastEl.classList.add('toast-hide');
+                    setTimeout(function() { toastEl.remove(); }, 300);
+                }
+            }, 1500);
+        };
+
+        function showDeleteModal(id) {
+            document.getElementById('deleteId').value = id;
+            document.getElementById('delete-overlay').style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-overlay').style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var successMessage = '@Html.Raw(TempData["SuccessMessage"])';
+            if (successMessage) {
+                showToast(successMessage, 'success');
+            }
+        });
+    </script>
+}

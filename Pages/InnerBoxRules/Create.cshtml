@@ -1,0 +1,193 @@
+@page
+@model CreateModel
+@{
+    ViewData["Title"] = "新建规则";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5><i class="bi bi-plus-circle"></i> 新建内箱规则</h5>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.WorkOrder" class="form-label required">工单号</label>
+                    <select asp-for="Input.WorkOrder" class="form-control select2" id="workOrderSelect">
+                        <option value="">-- 请选择工单号 --</option>
+                        @foreach (var wo in Model.WorkOrders)
+                        {
+                            <option value="@wo">@wo</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Input.WorkOrder" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label required">规则模板</label>
+                <div class="mb-2">
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="insertComponent('{PREFIX}')">
+                        插入前缀 {PREFIX}
+                    </button>
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="insertComponent('{VAR}')">
+                        插入变量 {VAR}
+                    </button>
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="insertComponent('{CONST}')">
+                        插入常量 {CONST}
+                    </button>
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="insertComponent('{DATE}')">
+                        插入日期 {DATE}
+                    </button>
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="insertComponent('{SEQ}')">
+                        插入流水码 {SEQ}
+                    </button>
+                </div>
+                <input asp-for="Input.Template" class="form-control" id="template" placeholder="如: {PREFIX}-{VAR}-{DATE}-{SEQ}" />
+                <span asp-validation-for="Input.Template" class="text-danger"></span>
+            </div>
+
+            <div id="prefixSection" class="row" style="display: none;">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Input.Prefix" class="form-label">固定前缀</label>
+                    <input asp-for="Input.Prefix" class="form-control" placeholder="如: ABC" />
+                    <span asp-validation-for="Input.Prefix" class="text-danger"></span>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label asp-for="Input.PrefixLength" class="form-label">前缀位数</label>
+                    <input asp-for="Input.PrefixLength" class="form-control" type="number" min="1" />
+                    <span asp-validation-for="Input.PrefixLength" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div id="constantSection" class="row" style="display: none;">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Input.Constant" class="form-label">常量值</label>
+                    <input asp-for="Input.Constant" class="form-control" placeholder="如: -A" />
+                    <span asp-validation-for="Input.Constant" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div id="sequenceSection" class="row" style="display: none;">
+                <div class="col-md-2 mb-3">
+                    <label asp-for="Input.SequenceLength" class="form-label">流水码位数</label>
+                    <input asp-for="Input.SequenceLength" class="form-control" type="number" min="1" max="10" value="4" />
+                    <span asp-validation-for="Input.SequenceLength" class="text-danger"></span>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label asp-for="Input.SequenceStart" class="form-label">流水码起始值</label>
+                    <input asp-for="Input.SequenceStart" class="form-control" type="number" min="1" value="1" />
+                    <span asp-validation-for="Input.SequenceStart" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">预览示例</label>
+                <div class="alert alert-info" id="preview">请填写模板后查看预览</div>
+            </div>
+
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> 创建
+                </button>
+                <a asp-page="./Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> 返回
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/zh-CN.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#workOrderSelect').select2({
+                language: 'zh-CN',
+                placeholder: '-- 请选择或输入工单号 --',
+                allowClear: true,
+                tags: true,
+                tokenSeparators: [',', ' ']
+            });
+        });
+
+        function insertComponent(component) {
+            var template = document.getElementById('template');
+            template.value += component;
+            template.focus();
+            updateVisibility();
+            updatePreview();
+        }
+
+        function updateVisibility() {
+            var template = document.getElementById('template').value || '';
+
+            document.getElementById('prefixSection').style.display =
+                template.includes('{PREFIX}') ? 'flex' : 'none';
+            document.getElementById('constantSection').style.display =
+                template.includes('{CONST}') ? 'flex' : 'none';
+            document.getElementById('sequenceSection').style.display =
+                template.includes('{SEQ}') ? 'flex' : 'none';
+        }
+
+        function updatePreview() {
+            var template = document.getElementById('template').value;
+            var prefix = document.getElementById('Input_Prefix').value || '';
+            var prefixLength = parseInt(document.getElementById('Input_PrefixLength').value) || 4;
+            var constant = document.getElementById('Input_Constant').value || '';
+            var seqLength = parseInt(document.getElementById('Input_SequenceLength').value) || 4;
+            var seqStart = parseInt(document.getElementById('Input_SequenceStart').value) || 1;
+
+            if (!template) {
+                document.getElementById('preview').textContent = '请填写模板后查看预览';
+                return;
+            }
+
+            var today = new Date();
+            var year = today.getFullYear();
+            var month = today.getMonth() + 1;
+            var day = today.getDate();
+
+            var yearCode = year - 2010 < 10 ? (year - 2010).toString() : String.fromCharCode(65 + year - 2020);
+            var monthCode = month <= 9 ? month.toString() : String.fromCharCode(65 + month - 10);
+            var dayCode = day <= 9 ? day.toString() : (function() {
+                var base = 65 + day - 10;
+                if (base >= 73) base++;
+                if (base >= 79) base++;
+                return String.fromCharCode(base);
+            })();
+
+            var dateCode = yearCode + monthCode + dayCode;
+            var seq = seqStart.toString().padStart(seqLength, '0');
+
+            var workOrder = $('#workOrderSelect').val() || 'WO12345';
+
+            var preview = template
+                .replace(/\{PREFIX\}/g, prefix.substring(0, prefixLength).padStart(prefixLength, '0'))
+                .replace(/\{VAR\}/g, workOrder)
+                .replace(/\{CONST\}/g, constant)
+                .replace(/\{DATE\}/g, dateCode)
+                .replace(/\{SEQ\}/g, seq);
+
+            document.getElementById('preview').textContent = preview;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var inputs = ['template', 'Input_Prefix', 'Input_PrefixLength', 'Input_Constant', 'Input_SequenceLength', 'Input_SequenceStart'];
+            inputs.forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.addEventListener('input', function() {
+                    updateVisibility();
+                    updatePreview();
+                });
+            });
+            updateVisibility();
+            updatePreview();
+        });
+    </script>
+}

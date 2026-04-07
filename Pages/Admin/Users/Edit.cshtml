@@ -1,0 +1,86 @@
+@page
+@model EditModel
+@using CreateRule.Models
+@{
+    ViewData["Title"] = "编辑用户";
+}
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5><i class="bi bi-pencil"></i> 编辑用户</h5>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <input type="hidden" asp-for="Input.Id" />
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.EmployeeId" class="form-label">工号</label>
+                    <input asp-for="Input.EmployeeId" class="form-control" readonly />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.RealName" class="form-label required">姓名</label>
+                    <input asp-for="Input.RealName" class="form-control" />
+                    <span asp-validation-for="Input.RealName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.Email" class="form-label required">邮箱</label>
+                    <input asp-for="Input.Email" type="email" class="form-control" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.ApprovalStatus" class="form-label">审核状态</label>
+                    <select asp-for="Input.ApprovalStatus" class="form-select"
+                            asp-items="Html.GetEnumSelectList<ApprovalStatus>()"></select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">分配角色</label>
+                @foreach (var role in Model.AvailableRoles)
+                {
+                    var isChecked = Model.UserRoles.Contains(role.Name!);
+                    <div class="form-check">
+                        <input type="checkbox" name="SelectedRoles" value="@role.Name"
+                               class="form-check-input" id="role-@role.Id"
+                               checked="@(isChecked ? "checked" : null)" />
+                        <label class="form-check-label" for="role-@role.Id">@role.Name (@role.Description)</label>
+                    </div>
+                }
+            </div>
+
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> 保存
+                </button>
+                <a asp-page="./Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> 返回
+                </a>
+            </div>
+        </form>
+
+        <hr />
+        <h6>重置密码</h6>
+        <form method="post" asp-page-handler="ResetPassword">
+            <input type="hidden" name="userId" value="@Model.Input.Id" />
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="password" name="newPassword" class="form-control"
+                           placeholder="输入新密码" required minlength="6" />
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-warning"
+                            onclick="return confirm('确定要重置此用户的密码吗？')">
+                        <i class="bi bi-key"></i> 重置密码
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

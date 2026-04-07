@@ -1,0 +1,64 @@
+@page
+@model RegisterPendingModel
+@{
+    ViewData["Title"] = "注册申请已提交";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CreateRule</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pending-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        .icon-success {
+            font-size: 80px;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 5px;
+            padding: 12px 30px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="pending-container">
+        <div class="icon-success">✓</div>
+        <h2 class="mb-3">注册申请已提交</h2>
+        <p class="text-muted mb-4">
+            您的注册申请已成功提交，请耐心等待管理员审核。<br />
+            审核通过后，您将收到邮件通知。
+        </p>
+        
+        <div class="alert alert-info mb-4">
+            <strong>提示：</strong><br />
+            审核通常在1-2个工作日内完成。<br />
+            如有疑问，请联系系统管理员。
+        </div>
+
+        <a asp-page="./Login" class="btn btn-primary">返回登录</a>
+    </div>
+</body>
+</html>

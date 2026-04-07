@@ -1,0 +1,49 @@
+@model List<CreateRule.Models.MenuItem>
+
+@{
+    var currentPath = Context.Request.Path.Value?.ToLower() ?? "";
+}
+
+@foreach (var item in Model)
+{
+    var hasChildren = item.Children?.Any() == true;
+    var isActive = currentPath.Equals(item.Url?.ToLower()) || 
+                   (hasChildren && item.Children.Any(c => currentPath.Equals(c.Url?.ToLower())));
+    
+    <div class="menu-group">
+        @if (hasChildren)
+        {
+            <a href="#submenu-@item.Id" class="menu-item @(isActive ? "active" : "")" data-bs-toggle="collapse">
+                @if (!string.IsNullOrEmpty(item.Icon))
+                {
+                    <i class="bi @item.Icon"></i>
+                }
+                <span>@item.Name</span>
+                <i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <div id="submenu-@item.Id" class="collapse submenu @(isActive ? "show" : "")">
+                @foreach (var child in item.Children.OrderBy(c => c.Order))
+                {
+                    var childActive = currentPath.Equals(child.Url?.ToLower());
+                    <a href="@child.Url" class="menu-item @(childActive ? "active" : "")">
+                        @if (!string.IsNullOrEmpty(child.Icon))
+                        {
+                            <i class="bi @child.Icon"></i>
+                        }
+                        <span>@child.Name</span>
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <a href="@item.Url" class="menu-item @(isActive ? "active" : "")">
+                @if (!string.IsNullOrEmpty(item.Icon))
+                {
+                    <i class="bi @item.Icon"></i>
+                }
+                <span>@item.Name</span>
+            </a>
+        }
+    </div>
+}
